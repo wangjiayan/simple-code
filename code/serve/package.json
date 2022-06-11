@@ -1,0 +1,21 @@
+{
+  "name": "simple-deploy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    
+    "example": "node index.js example -p 8000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^13.0.2"
+  },
+  "dependencies": {
+    "arg": "^5.0.2",
+    "chalk": "2.4.1",
+    "serve-handler": "^6.1.3"
+  }
+}
