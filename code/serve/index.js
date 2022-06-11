@@ -50,6 +50,7 @@ const entryFile = args._[0]
     const pathname = req.url
     let absolutePath = path.resolve(config.entry ?? '', path.join('.', pathname))
     let stat = null 
+    let statusCode = 200
     try {
       stat = await fs.promises.lstat(absolutePath)
     }catch(e){
@@ -62,6 +63,13 @@ const entryFile = args._[0]
     if (stat === null){
       return responseNotFound(res)
     }
+    let headers = {
+      // 取其文件系统中的体积作为其大小
+      // 问: 文件的大小与其编码格式有关，那么文件系统的体积应该是如何确定的？
+      'Content-Length': stat.size
+    }
+  
+    res.writeHead(statusCode, headers)
     fs.createReadStream(absolutePath).pipe(res)
  }
 
