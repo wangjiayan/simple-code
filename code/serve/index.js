@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 const http = require('node:http')
-const handler = require('serve-handler');
+// const handler = require('serve-handler');
 const {URL} = require('node:url')
+const path = require('node:path')
+const fs = require('node:fs')
 // + 命令行的方式，可传入端口号及目标目录
 // + 处理 404
 // + 流式返回资源，处理 Content-Length
@@ -16,25 +18,56 @@ const {URL} = require('node:url')
 // + symlink
 const arg = require('arg');
 const chalk = require('chalk');
+const { stat } = require('node:fs');
 const args = arg({
 	'--port': Number, // --port <number> or --port=<number>
   '-p': '--port'
 });
 
-const warning = (message) => chalk`{yellow WARNING:} ${message}`;
 const info = (message) => chalk`{magenta INFO:} ${message}`;
-const error = (message) => chalk`{red ERROR:} ${message}`;
 const port = args['--port'] || 3000
 const entryFile = args._[0]
 
 
- function httpHandler (req, res){
+  // 如果是目录，则去寻找目录中的 index.html
+ async function processDirectory (absolutePath){
+  const newAbsolutePath = path.join(absolutePath, 'index.html')
+  console.log('newAbsolutePath',newAbsolutePath)
+  try {
+    const newStat = await fs.promises.lstat(newAbsolutePath)
+    return [newStat,newAbsolutePath]
+  }catch (e) {
+    return [null,newAbsolutePath]
+  }
+ }
+ function responseNotFound (res){
+   res.statusCode=404
+   res.end('not found')
+ }
+
+ async function httpHandler (req, res, config){
     console.log('req',req.url)
+    const pathname = req.url
+    let absolutePath = path.resolve(config.entry ?? '', path.join('.', pathname))
+    let stat = null 
+    try {
+      stat = await fs.promises.lstat(absolutePath)
+    }catch(e){
+      throw new Error(e)
+    }
+    if (stat?.isDirectory()) {
+      // 如果是目录，则去寻找目录中的 index.html
+      [stat, absolutePath] = await processDirectory(absolutePath)
+    }
+    if (stat === null){
+      return responseNotFound(res)
+    }
+    fs.createReadStream(absolutePath).pipe(res)
  }
 
  function startEndpoint(port, entry){
   const server= http.createServer(async (request, response) => {
-    await httpHandler(request, response);
+    await httpHandler(request, response, { entry });
   })
  
    server.listen(port,()=>{
