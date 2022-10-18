@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@babel/core": "^7.19.3",
+    "babel-types": "^6.26.0"
+  }
+}

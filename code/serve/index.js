@@ -18,7 +18,6 @@ const fs = require('node:fs')
 // + symlink
 const arg = require('arg');
 const chalk = require('chalk');
-const { stat } = require('node:fs');
 const args = arg({
 	'--port': Number, // --port <number> or --port=<number>
   '-p': '--port'

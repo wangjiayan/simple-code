@@ -13,12 +13,12 @@
 
 以下功能选做:
 
-+ rewrites
-+ redirects
-+ cleanUrls
-+ trailingSlash
-+ etag
-+ symlink
++ rewrites：将路径重写为不同的路径
++ redirects：将路径转发到不同路径或外部 URL
++ cleanUrls：将.html扩展名从路径中剥离
++ trailingSlash：删除或添加尾部斜杠到所有路径
++ etag：计算一个强ETag响应头，而不是Last-Modified
++ symlink：解决符号链接而不是呈现 404 错误
 
 ## 山月的代码实现
 
